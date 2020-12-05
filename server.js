@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express()
 //Database
-const MONGOURL= MONGOURL_HERE
+const MONGOURL= mongodb+srv://sweprojectams:akj@1234@cluster0.v86ui.mongodb.net/<dbname>?retryWrites=true&w=majority
 mongoose.connect(MONGOURL, {useNewUrlParser: true ,useUnifiedTopology:true})
 .then(() => console.log("Connected to database"))
 .catch(err => console.log(err))
