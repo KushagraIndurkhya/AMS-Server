@@ -1,2 +1,6 @@
-node_modules
-course_controller_copy.js
+/node_modules
+/controllers/course_controller_copy.js
+/configs/db.config.js
+npm-debug.log
+.DS_Store
+/*.env
