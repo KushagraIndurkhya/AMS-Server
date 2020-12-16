@@ -1,6 +1,6 @@
 /node_modules
-/controllers/course_controller_copy.js
-/configs/db.config.js
+controllers/course_controller_copy.js
 npm-debug.log
 .DS_Store
 /*.env
+configs/db.config.js

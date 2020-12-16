@@ -5,17 +5,18 @@ module.exports = {
     create: async (req, res) => {
         try{
         let course = new course_model({
+        course_id:req.body.course_id,
         name: req.body.name,
         admin_id: mongoose.Types.ObjectId(req.body.admin_id),
         sessioncount:0,
         session: 0,
-        allowEnroll:true
+        enroll:Math.floor(100000 + Math.random() * 900000)
         })
         const result= await course.save()
-        res.json({ success: true, result: result})
+        res.status(200).json({ success: true, result: result})
     }
         catch(err) {
-             res.json({ success: false, result: err})
+          res.status(501).json({ success: false, result: err})
             }
     },
     
@@ -35,10 +36,10 @@ module.exports = {
         try
         {
         const result= await course_model.find({admin_id:req.params.id})
-        res.json({ success: true, result:result})
+        res.status(200).json({ success: true, result:result})
     }
           catch(err){
-              res.json({ success: false, result: err})
+              res.status(501).json({ success: false, result: err})
           }
         },
 
@@ -47,16 +48,16 @@ module.exports = {
             function sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
               }
-            var code=(Math.floor(Math.random()*(1000000)))
+            var code=Math.floor(100000 + Math.random() * 900000)
             var id= mongoose.Types.ObjectId(req.params.id)
             await course_model.findByIdAndUpdate(id, {$set:{session:code,"attendance.$[].marked":false}})
             await course_model.findByIdAndUpdate(id, {$inc:{sessioncount:1}})
-            res.json({ success: true, result:code})
+            res.status(200).json({ success: true, result:code})
             await sleep(50000)
             await course_model.findByIdAndUpdate(id, {$set:{session:0}})
     }
       catch(err) {
-          res.json({ success: false, result: err})
+          res.status(501).json({ success: false, result: err})
       }
     },
 
@@ -65,10 +66,10 @@ module.exports = {
         try{
             var id= mongoose.Types.ObjectId(req.params.id)
             const result=await course_model.findByIdAndDelete(id)
-            res.json({ success: true, result: result})
+            res.status(200).json({ success: true, result: result})
         }
           catch(err){
-              res.json({ success: false, result: err})
+              res.status(501).json({ success: false, result: err})
         }
         },
 
@@ -77,13 +78,19 @@ module.exports = {
         var c_id= mongoose.Types.ObjectId(req.params.id)
         const all  = await course_model.find({_id:c_id})
         result={}
-
+        var name_arr=[]
+        var roll_arr=[]
+        var attendance_arr=[]
         for(i in all[0].attendance)
         {
-          result[all[0].attendance[i].name]=
-            Math.floor(((all[0].attendance[i].attendance)/(all[0].sessioncount))*100)
+          const stud=await student_model.find({_id:all[0].attendance[i].Id})
+          roll_arr.push(stud[0].rollNumber)
+          name_arr.push(all[0].attendance[i].name)
+          attendance_arr.push(Math.floor(((all[0].attendance[i].attendance)/(all[0].sessioncount))))
         }
-          res.status(200).json(result)
+          res.status(200).json({name:name_arr,
+                                roll:roll_arr,
+                                attendance:attendance_arr})
       }
       catch(err){
           res.status(501).json({ success: false, result: err})

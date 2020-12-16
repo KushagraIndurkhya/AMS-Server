@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const app = express()
 
 
-//Database
+//Database Connection
 const config = require('./configs/db.config')
 const MONGOURL= config.MONGOURL
 mongoose.connect(MONGOURL, {useNewUrlParser: true ,
@@ -12,7 +12,6 @@ mongoose.connect(MONGOURL, {useNewUrlParser: true ,
   useFindAndModify:false})
 .then(() => console.log("Connected to database"))
 .catch(err => console.log(err))
-
 
 //Middleware
 app.use(express.urlencoded({ extended:false }))
@@ -25,9 +24,8 @@ const student_Control = require('./controllers/student_controller')
 
 
 //Routes
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
+app.get('/', (req, res) => { res.send('Attendance Management System')})
+
 
 app.post('/api/course/create', course_Control.create)
 app.get('/api/course/home/:id',course_Control.course_home)
@@ -37,10 +35,9 @@ app.post('/api/course/start/:id',course_Control.start_session)
 app.delete('/api/course/delete/:id',course_Control.delete)
 
 
-
 app.get('/api/student/all',student_Control.all)
 app.get('/api/student/home/:id',student_Control.student_home)
-app.post('/api/student/enroll/:s_id/:c_id',student_Control.enroll)
+app.post('/api/student/enroll/:s_id/:c_id/:code',student_Control.enroll)
 app.post('/api/student/attend/:s_id/:c_id/:code',student_Control.attend)
 
 

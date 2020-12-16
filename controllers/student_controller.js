@@ -6,11 +6,12 @@ module.exports = {
         try {
             var c_id= mongoose.Types.ObjectId(req.params.c_id)
             var s_id= mongoose.Types.ObjectId(req.params.s_id)
+            var e_code=req.params.code
 
           const result=await course_model.findById(c_id)
           const stud_quer=await student_model.find({"_id":s_id})
           const name_curr=stud_quer[0].name
-          if(result.allowEnroll==true)
+          if(result.enroll==e_code)
           {
             const isMarked=await course_model.find({"_id":c_id, "attendance.Id" : s_id},async (err, docs) =>{ 
               
@@ -37,7 +38,7 @@ module.exports = {
         }
           else
           {
-            res.json({ success: false,message:"enrollment closed" })
+            res.json({ success: false,message:"Wrong Code" })
           }
         }
         catch (err) {

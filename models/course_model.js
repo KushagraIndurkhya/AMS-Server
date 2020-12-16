@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 const course_Schema = new Schema({
-name: {type: String,unique:true},
+course_id: {type: String,unique:true},
+name: String,
 admin_id: String,
 sessioncount: Number,
 session: Number,
-allowEnroll:Boolean,
+enroll:Number,
 attendance:
 {
     type: Array,
