@@ -1,22 +1,31 @@
 const course_model = require('../models/course_model');
 const student_model = require('../models/student_model');
+const faculty_model = require('../models/faculty_model');
+const mailer=require('./../utills/mailer')
 const mongoose = require('mongoose');
+const { enroll } = require('./student_controller');
+
 module.exports = {
     create: async (req, res) => {
         try{
+        const enroll_code=Math.floor(100000 + Math.random() * 900000)
         let course = new course_model({
         course_id:req.body.course_id,
         name: req.body.name,
         admin_id: mongoose.Types.ObjectId(req.body.admin_id),
         sessioncount:0,
         session: 0,
-        enroll:Math.floor(100000 + Math.random() * 900000)
+        enroll:enroll_code
         })
+        const admin = await faculty_model.findById(mongoose.Types.ObjectId(req.body.admin_id))
+        mailer.codeMailer(admin.email,enroll_code)
         const result= await course.save()
         res.status(200).json({ success: true, result: result})
     }
+    
         catch(err) {
-          res.status(501).json({ success: false, result: err})
+          console.log(err)
+          res.status(501).json({ success: false, message:"Something went wrong"})
             }
     },
     
@@ -28,7 +37,8 @@ module.exports = {
       }
       catch (err)
       {
-        res.status(501).json({success: false,message: err.message})
+        console.log(err)
+        res.status(501).json({ success: false, message:"Something went wrong"})
       }
 },
    
@@ -39,7 +49,8 @@ module.exports = {
         res.status(200).json({ success: true, result:result})
     }
           catch(err){
-              res.status(501).json({ success: false, result: err})
+            console.log(err)
+            res.status(501).json({ success: false, message:"Something went wrong"})
           }
         },
 
@@ -52,12 +63,14 @@ module.exports = {
             var id= mongoose.Types.ObjectId(req.params.id)
             await course_model.findByIdAndUpdate(id, {$set:{session:code,"attendance.$[].marked":false}})
             await course_model.findByIdAndUpdate(id, {$inc:{sessioncount:1}})
+            console.log(code)
             res.status(200).json({ success: true, result:code})
             await sleep(50000)
             await course_model.findByIdAndUpdate(id, {$set:{session:0}})
     }
       catch(err) {
-          res.status(501).json({ success: false, result: err})
+        console.log(err)
+          res.status(501).json({ success: false, message:"Something went wrong"})
       }
     },
 
@@ -69,7 +82,8 @@ module.exports = {
             res.status(200).json({ success: true, result: result})
         }
           catch(err){
-              res.status(501).json({ success: false, result: err})
+            console.log(err)
+            res.status(501).json({ success: false, message:"Something went wrong"})
         }
         },
 
@@ -86,14 +100,16 @@ module.exports = {
           const stud=await student_model.find({_id:all[0].attendance[i].Id})
           roll_arr.push(stud[0].rollNumber)
           name_arr.push(all[0].attendance[i].name)
-          attendance_arr.push(Math.floor(((all[0].attendance[i].attendance)/(all[0].sessioncount))))
+          var num=Number(all[0].attendance[i].attendance)/(all[0].sessioncount)
+          attendance_arr.push(Number(num.toPrecision(4)))
         }
           res.status(200).json({name:name_arr,
                                 roll:roll_arr,
                                 attendance:attendance_arr})
       }
       catch(err){
-          res.status(501).json({ success: false, result: err})
+        console.log(err)
+        res.status(501).json({ success: false, message:"Something went wrong"})
     }
     },
 

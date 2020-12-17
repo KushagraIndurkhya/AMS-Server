@@ -31,7 +31,7 @@ app.post('/api/course/create', course_Control.create)
 app.get('/api/course/home/:id',course_Control.course_home)
 app.post('/api/course/close/:id',course_Control.close)
 app.get('/api/course/getcourses/:id',course_Control.get)
-app.post('/api/course/start/:id',course_Control.start_session)
+app.get('/api/course/start/:id',course_Control.start_session)
 app.delete('/api/course/delete/:id',course_Control.delete)
 
 
